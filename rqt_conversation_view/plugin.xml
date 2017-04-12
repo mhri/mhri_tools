@@ -1,0 +1,17 @@
+<library path="src">
+	<class name="ConversationView" type="rqt_conversation_view.rqt_conversation_view.ConversationViewPlugin" base_class_type="rqt_gui_py::Plugin">
+	<description>
+		Display conversation with robot for Social HRI Framework
+	</description>
+	<qtgui>
+	  <group>
+		<label>sHRI Tools</label>
+		<icon type="theme">folder</icon>
+		<statustip>Plugins related to sHRI tools.</statustip>
+	  </group>
+	  <label>Conversation view</label>
+	  <icon type="theme">utilities-system-monitor</icon>
+	  <statustip>A Python GUI plugin for viewing the conversation of sHRI framework.</statustip>
+	</qtgui>
+  </class>
+</library>
