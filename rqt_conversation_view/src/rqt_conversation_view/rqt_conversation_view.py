@@ -10,12 +10,15 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget, QFrame, QListWidgetItem, QVBoxLayout, QHBoxLayout, QLabel, QLayout, QSizePolicy, QSpacerItem, QShortcut
 from python_qt_binding.QtGui import QColor, QKeySequence
-from python_qt_binding.QtCore import Qt
+from python_qt_binding.QtCore import Qt, pyqtSignal
 
 from mhri_social_msgs.msg import RecognizedWord
+from mhri_msgs.msg import RaisingEvents, Reply
 
 
 class ConversationViewPlugin(Plugin):
+    signalAddItem = pyqtSignal(str, int)
+
     def __init__(self, context):
         super(ConversationViewPlugin, self).__init__(context)
         self.setObjectName('ConversationViewPlugin')
@@ -33,7 +36,12 @@ class ConversationViewPlugin(Plugin):
         self._widget.buttonSend.clicked.connect(self.handle_button_send)
         self._widget.textInput.setFocus()
 
+        self.signalAddItem.connect(self.add_item_to_conversation_view)
+
         self.pub_input = rospy.Publisher('recognized_word', RecognizedWord, queue_size=10)
+        rospy.Subscriber('raising_events', RaisingEvents, self.handle_raising_events)
+        rospy.Subscriber('reply', Reply, self.handle_reply)
+
 
     def add_item_to_conversation_view(self, msg, type=0):
         label_msg = QLabel(msg)
@@ -78,19 +86,30 @@ class ConversationViewPlugin(Plugin):
         self._widget.listWidget.addItem(item)
         self._widget.listWidget.setItemWidget(item, widget)
 
+
+    def handle_raising_events(self, msg):
+        event_text = msg.recognized_word
+        for event in msg.events:
+            event_text = event_text + '\n -%s'%event
+        self.signalAddItem.emit(event_text, 1)
+
+
+    def handle_reply(self, msg):
+        event_text = msg.reply
+        self.signalAddItem.emit(event_text, 0)
+
+
     def handle_button_send(self):
         input_text = self._widget.textInput.toPlainText()
         if input_text == '':
             return
 
-        self.add_item_to_conversation_view(input_text, 1)
-        self._widget.textInput.clear()
-
         msg = RecognizedWord()
         msg.recognized_word = input_text
         msg.confidence = 1.0
-
         self.pub_input.publish(msg)
+        self._widget.textInput.clear()
+        
 
     def shutdown_plugin(self):
         pass
