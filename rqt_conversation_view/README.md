@@ -15,4 +15,4 @@ Run the main node standalone with
 
 ## Bugs & Feature Requests
 
-    Please report bugs and request features using the [Issue Tracker](https://github.com/mhri/mhri_tools/issues).
+Please report bugs and request features using the [Issue Tracker](https://github.com/mhri/mhri_tools/issues).
