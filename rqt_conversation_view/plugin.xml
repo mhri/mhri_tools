@@ -10,7 +10,7 @@
 		<statustip>Plugins related to sHRI tools.</statustip>
 	  </group>
 	  <label>Conversation view</label>
-	  <icon type="theme">utilities-system-monitor</icon>
+	  <icon type="theme">libreoffice-text</icon>
 	  <statustip>A Python GUI plugin for viewing the conversation of sHRI framework.</statustip>
 	</qtgui>
   </class>

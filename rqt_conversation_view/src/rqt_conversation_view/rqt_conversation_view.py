@@ -10,7 +10,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget, QFrame, QListWidgetItem, QVBoxLayout, QHBoxLayout, QLabel, QLayout, QSizePolicy, QSpacerItem, QShortcut
 from python_qt_binding.QtGui import QColor, QKeySequence
-from python_qt_binding.QtCore import Qt, pyqtSignal
+from python_qt_binding.QtCore import Qt, pyqtSignal, QSize
 
 from mhri_social_msgs.msg import RecognizedWord
 from mhri_msgs.msg import RaisingEvents, Reply
@@ -45,10 +45,11 @@ class ConversationViewPlugin(Plugin):
 
     def add_item_to_conversation_view(self, msg, type=0):
         label_msg = QLabel(msg)
+        label_msg.setWordWrap(True)
         label_msg.setStyleSheet('font-size:10pt;')
 
         inner_text_layout = QHBoxLayout()
-        horizonalSpacer1 = QSpacerItem(32, 20, QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        horizonalSpacer1 = QSpacerItem(0, 0, QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         if type == 0:
             inner_text_layout.addWidget(label_msg)
             inner_text_layout.addItem(horizonalSpacer1)
@@ -65,7 +66,7 @@ class ConversationViewPlugin(Plugin):
         inner_layout.setSizeConstraint(QLayout.SetFixedSize)
 
         outer_layout = QHBoxLayout()
-        horizonalSpacer2 = QSpacerItem(32, 20, QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        horizonalSpacer2 = QSpacerItem(0, 0, QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         if type == 0:
             label_msg.setStyleSheet('background: #e5e5ea; padding: 6px; border-radius: 8px;')
             time_msg.setAlignment(Qt.AlignLeft)
@@ -76,6 +77,7 @@ class ConversationViewPlugin(Plugin):
             time_msg.setAlignment(Qt.AlignRight)
             outer_layout.addItem(horizonalSpacer2)
             outer_layout.addItem(inner_layout)
+        outer_layout.setSizeConstraint(QLayout.SetMinimumSize)
 
         widget = QWidget()
         widget.setLayout(outer_layout)
@@ -83,8 +85,10 @@ class ConversationViewPlugin(Plugin):
 
         item = QListWidgetItem()
         item.setSizeHint(widget.sizeHint())
+
         self._widget.listWidget.addItem(item)
         self._widget.listWidget.setItemWidget(item, widget)
+        self._widget.listWidget.scrollToBottom()
 
 
     def handle_raising_events(self, msg):
@@ -109,7 +113,7 @@ class ConversationViewPlugin(Plugin):
         msg.confidence = 1.0
         self.pub_input.publish(msg)
         self._widget.textInput.clear()
-        
+
 
     def shutdown_plugin(self):
         pass
