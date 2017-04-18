@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>object_tf_publisher</name>
+  <version>0.0.0</version>
+  <description>The object_tf_publisher package</description>
+
+  <author email="byeongkyu@gmail.com">Byeong-Kyu Ahn</author>
+  <maintainer email="byeongkyu@gmail.com">Byeong-Kyu Ahn</maintainer>
+
+  <license>BSD</license>
+  <url type="website">https://github.com/mhri/mhri/wiki</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>social_mind</exec_depend>
+
+  <export>
+  </export>
+</package>
