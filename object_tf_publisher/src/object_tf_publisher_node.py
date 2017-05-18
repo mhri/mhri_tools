@@ -19,7 +19,7 @@ class ObjectTFPublisherNode:
 
         self.pub_vis_msg = rospy.Publisher('visualization_objects', MarkerArray, queue_size=10)
 
-        refresh_period = rospy.get_param('~refresh_period', 1.0)
+        refresh_period = rospy.get_param('~refresh_period', 0.5)
         rospy.Timer(rospy.Duration(refresh_period), self.handle_periodic_publish)
 
         rospy.loginfo('initialized...')
@@ -28,7 +28,8 @@ class ObjectTFPublisherNode:
     def handle_periodic_publish(self, event):
         req = ReadDataRequest()
         req.perception_name = 'objects'
-        req.query = []
+        req.query = '{}'
+        req.data = ['~']
 
         result = self.rd_srv(req)
         if not result.result:
@@ -36,21 +37,21 @@ class ObjectTFPublisherNode:
 
         vis_msg = MarkerArray()
 
-        for i in result.data:
-            obj = json.loads(i)
+        ret_data = json.loads(result.data)
 
+        for obj in ret_data:
             br = tf.TransformBroadcaster()
             br.sendTransform(
                 (obj['xyz'][0], obj['xyz'][1], obj['xyz'][2]),
                 tf.transformations.quaternion_from_euler(obj['rpy'][0], obj['rpy'][1], obj['rpy'][2]),
                 rospy.Time.now(),
-                obj['object_name'],
+                obj['name'],
                 obj['frame_id'])
 
             marker = Marker()
             marker.header.frame_id = obj['frame_id']
             marker.header.stamp = rospy.Time.now()
-            marker.ns = obj['object_name']
+            marker.ns = obj['name']
             marker.id = 0
 
             obj_type = obj['geometry'].keys()[0]
