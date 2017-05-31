@@ -5,7 +5,9 @@ import json
 
 import rospy
 import tf
+import tf2_ros
 from mhri_msgs.srv import ReadData, ReadDataRequest
+from geometry_msgs.msg import TransformStamped
 from visualization_msgs.msg import MarkerArray, Marker
 
 
@@ -40,13 +42,26 @@ class ObjectTFPublisherNode:
         ret_data = json.loads(result.data)
 
         for obj in ret_data:
-            br = tf.TransformBroadcaster()
-            br.sendTransform(
-                (obj['xyz'][0], obj['xyz'][1], obj['xyz'][2]),
-                tf.transformations.quaternion_from_euler(obj['rpy'][0], obj['rpy'][1], obj['rpy'][2]),
-                rospy.Time.now(),
-                obj['name'],
-                obj['frame_id'])
+            br = tf2_ros.TransformBroadcaster()
+            transformed_msg = TransformStamped()
+
+            transformed_msg.header.stamp = rospy.Time.now()
+            transformed_msg.header.frame_id = obj['frame_id']
+            transformed_msg.child_frame_id = obj['name']
+
+            transformed_msg.transform.translation.x = obj['xyz'][0]
+            transformed_msg.transform.translation.y = obj['xyz'][1]
+            transformed_msg.transform.translation.z = obj['xyz'][2]
+
+            q = tf.transformations.quaternion_from_euler(obj['rpy'][0], obj['rpy'][1], obj['rpy'][2])
+
+            transformed_msg.transform.rotation.x = q[0]
+            transformed_msg.transform.rotation.y = q[1]
+            transformed_msg.transform.rotation.z = q[2]
+            transformed_msg.transform.rotation.w = q[3]
+
+            br.sendTransform(transformed_msg)
+
 
             marker = Marker()
             marker.header.frame_id = obj['frame_id']
