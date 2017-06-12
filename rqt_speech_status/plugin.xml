@@ -1,0 +1,17 @@
+<library path="src">
+	<class name="SpeechStatus" type="rqt_speech_status.rqt_speech_status.SpeechStatusPlugin" base_class_type="rqt_gui_py::Plugin">
+	<description>
+		Display speech status for Social HRI Framework
+	</description>
+	<qtgui>
+	  <group>
+		<label>sHRI Tools</label>
+		<icon type="theme">folder</icon>
+		<statustip>Plugins related to sHRI tools.</statustip>
+	  </group>
+	  <label>Speech Status</label>
+	  <icon type="theme">libreoffice-text</icon>
+	  <statustip>A Python GUI plugin for viewing the status of speech in sHRI framework.</statustip>
+	</qtgui>
+  </class>
+</library>
